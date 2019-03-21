@@ -1,0 +1,9 @@
+#include <iostream>
+
+using namespace std;
+int main{
+
+cout<<"Digita su oracion"<<endl;
+
+return 0;
+}
