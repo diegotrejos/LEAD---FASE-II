@@ -1,9 +1,13 @@
-#include <iostream>
 
-using namespace std;
-int main{
+#include <string>
 
-cout<<"Digita su oracion"<<endl;
+class Contador
+{
+    public:
+        Contador(std::string sen);
+        ~Contador();
 
-return 0;
-}
+        int wordCount;
+        std::string sentence;
+
+};
