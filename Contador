@@ -1,13 +1,8 @@
+#!/usr/bin/env python
 
-#include <string>
 
-class Contador
-{
-    public:
-        Contador(std::string sen);
-        ~Contador();
-
-        int wordCount;
-        std::string sentence;
-
-};
+print('Digite su oracion')
+oracion = str(input())
+print ('su oracion es:', oracion)
+res = len(oracion.split())
+print("Numero de palabras: " + str(res))
