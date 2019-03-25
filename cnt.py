@@ -6,8 +6,7 @@ import threading
 print('Que tantos segundos esperar')
 num=input()
 #reviso que ingreso sea un numero
-try:
-	
+try:	
 	val=int(num)
 	tiempo = val
 except:
@@ -23,10 +22,8 @@ cola = deque()
 
 #hilo
 def worker():
-
-
 	#esto esta en cliente, seria el que recibe los datos 
-	while oracion != '1'
+	while oracion != 1:
 		print('Digite su oracion')
 		oracion = str(input())
 	#
@@ -37,8 +34,8 @@ def worker():
 		cola.append(resultado)
 		print(cola)
 
-while message != '1'
-	if cola
+while message != '1':
+	if cola:
 	#si no esta vacia
 	#espera 5 segundos
 		time.sleep(tiempo);
