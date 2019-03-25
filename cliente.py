@@ -3,59 +3,22 @@ import socket
 import queue
 import time
 import threading
+import pair
 
-TCP_IP = '10.1.138.31'
-TCP_PORT = 5020
+TCP_IP = '10.1.137.255'
+TCP_PORT = 5050
 BUFFER_SIZE = 1024
-#MESSAGE = "Hello, World!"
-
-#s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#s.connect((TCP_IP, TCP_PORT))
-
-######################################################################################
-#esto esta en cliente
-
-#cola = deque()
-
-#while oracion != '1': 
-#	oracion = str(input())
-	#
-	#cuenta palabras ESTO VA PARA EL SERVIDOR
-	#print ('contando palabras en oracion:', oracion)
-	#resultado = len(oracion.split())
-	#guarda en cola
-	#cola.append(resultado)
-	#print(cola)
-	#espera 5 segundos
-	
-	
-#envio datos a cliente
-#cola.popleft()
-#print(cola)
-#####################################################################################
 
 
+mensaje = ""
 
-class MyThread (threading.Thread):
-	def __init__(self, threadID): #override del constructor
-		threading.Thread.__init__(self)
-		self.threadID = threadID
+socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+socket.connect((TCP_IP, TCP_PORT))
 
-	def run(self):
-		if self.threadID == 0:
-			# Lea
-			print("Soy el Thread 0")
-		else:
-			# Envie
-			print("Soy el Thread 1")
-			
-thread1 = MyThread(0)
-thread2 = MyThread(1)
-thread1.start()
-thread2.start()
-thread1.join()
-thread2.join()
 
+cola = queue.Queue()
+lista_resultados = []
+(int)counter = 0
 
 def lector():
 	num=input('Introduzca la espera en segundos: \n')
@@ -66,19 +29,48 @@ def lector():
 	except:
 		print("Eso no es un numero, se pondran 5 segundos")
 		tiempo = 5
-	message = ''
-	cola = queue.Queue()
-	#cola_2 = Queue()
-	while message != '1':
-		message = input('Digite su oracion\n')
-		print(message)
-		#mes = list(message)
-		cola.put(message)
-		#s.send(message.encode())
-		#data = s.recv(BUFFER_SIZE)
-		#cola_2.put(data.decode())	
-		time.sleep(tiempo)
-		# print(cola)
-	#s.close()
 	
-lector()
+	while mensaje != "1":
+		mensaje = input('Digite su oracion\n')
+		#print(mensaje)
+		myPair = pair.Pair(mensaje)
+		listaResultados.append(myPair)
+		cola.put(myPair)
+		
+
+	
+
+def enviar():
+	seguir = True
+	while seguir:
+		mensj = cola.get().oracion
+		if mensj == "1":
+			seguir = False
+		socket.send(mensj.encode())
+		data = socket.recv(BUFFER_SIZE)
+		list[counter].cantidadPalabras = data.decode()
+		counter = counter + 1
+		
+class MyThread (threading.Thread):
+	def __init__(self, threadID): #override del constructor
+		threading.Thread.__init__(self)
+		self.threadID = threadID
+
+	def run(self):
+		if self.threadID == 0:
+			# Lea
+			print("Soy el Thread 0")
+			lector()
+		else:
+			# Envie
+			print("Soy el Thread 1")
+			enviar()
+			
+			
+thread1 = MyThread(0)
+thread2 = MyThread(1)
+thread1.start()
+thread2.start()
+thread1.join()
+thread2.join()
+socket.close()
