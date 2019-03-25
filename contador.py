@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-from collections import deque
+import queue
 import time
+import pair
 
 print('Que tantos segundos esperar')
 num=input()
@@ -15,19 +16,24 @@ except:
 
 #esto esta en cliente
 oracion = ''
-cola = deque()
+cola = queue.Queue()
 while oracion != '1': 
 	oracion = str(input('Digite su oracion\n'))
-	#
-	#cuenta palabras
-	print ('contando palabras en oracion:', oracion)
-	resultado = len(oracion.split())
-	#guarda en cola
-	cola.append(resultado)
-	#print(cola)
-	#espera 5 segundos
-	time.sleep(tiempo);
+	#Crea un objeto pair
+	myPair = pair.Pair(oracion)
 	
+	#cuenta palabras
+	print ("Contando palabras en oracion: ", oracion)
+	resultado = len(oracion.split())
+	myPair.cantidadPalabras = resultado
+	
+	#guarda en cola
+	cola.put(myPair)
+	#print(cola)
+	cola.get().printPair()
+	#espera 5 segundos
+	
+	time.sleep(tiempo);	
 #envio datos a cliente
-cola.popleft()
-print(cola)
+
+
