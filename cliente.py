@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-
 import socket
-from collections import deque
+import queue
 import time
 import threading
 
@@ -35,6 +34,29 @@ BUFFER_SIZE = 1024
 #print(cola)
 #####################################################################################
 
+
+
+class MyThread (threading.Thread):
+	def __init__(self, threadID): #override del constructor
+		threading.Thread.__init__(self)
+		self.threadID = threadID
+
+	def run(self):
+		if self.threadID == 0:
+			# Lea
+			print("Soy el Thread 0")
+		else:
+			# Envie
+			print("Soy el Thread 1")
+			
+thread1 = MyThread(0)
+thread2 = MyThread(1)
+thread1.start()
+thread2.start()
+thread1.join()
+thread2.join()
+
+
 def lector():
 	num=input('Introduzca la espera en segundos: \n')
 	#reviso que ingreso sea un numero
@@ -45,7 +67,7 @@ def lector():
 		print("Eso no es un numero, se pondran 5 segundos")
 		tiempo = 5
 	message = ''
-	cola = queue()
+	cola = queue.Queue()
 	#cola_2 = Queue()
 	while message != '1':
 		message = input('Digite su oracion\n')
@@ -56,7 +78,7 @@ def lector():
 		#data = s.recv(BUFFER_SIZE)
 		#cola_2.put(data.decode())	
 		time.sleep(tiempo)
-		print(cola)
+		# print(cola)
 	#s.close()
 	
 lector()
