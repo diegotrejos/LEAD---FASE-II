@@ -16,6 +16,9 @@ addr = ''
 mySocket = ''
 TCP_IP = ''
 TCP_PORT = ''
+contador = 0
+w, h = 4, 1024
+Matrix = [[0 for x in range(w)] for y in range(h)]
 
 semCola = threading.Semaphore(0) #semaforo cola
 
@@ -75,11 +78,19 @@ def leerConsola():
 		while b == False:
 			y = input('Digite el IP: \n')
 			b = validate_ip(y)
+		print('Las oraciones con IP = ', y, ' son:\n')
+		for i in range(0,contador-1):
+			if Matrix[i][2] == y:
+				print(Matrix[i][0], ' : ', Matrix[i][1])
 	else:
 		while b == False:
 			y = int(input('Digite el puerto: \n')) #10.1.137.25 
 			if 0 <= y <= 65535:
 				b = True
+		print('Las oraciones del puerto = ', y, ' son:\n')
+		for i in range(0,contador-1):
+			if Matrix[i][3] == y:
+				print(Matrix[i][0], ' : ', Matrix[i][1])
 
 def enviar():
 	seguir = True
@@ -90,6 +101,8 @@ def enviar():
 			if oracion == "1":
 				seguir = False
 			resultado = len(oracion.split())
+			Matrix[contador] = [oracion,resultado,TCP_IP,TCP_Port]
+			contador += 1
 			conn.send(str(resultado).encode())
 			time.sleep(tiempo)
 
@@ -142,13 +155,13 @@ comunicacionSocket()
 
 thread0 = MyThread(0)
 thread1 = MyThread(1)
-#thread2 = MyThread(2)
+thread2 = MyThread(2)
 thread0.start()
 thread1.start()
-#thread2.start()
+thread2.start()
 thread0.join()
 thread1.join()
-#thread2.join()
+thread2.join()
 
 conn.close()
 
