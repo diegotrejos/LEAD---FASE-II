@@ -4,9 +4,10 @@ import queue
 import time
 import threading
 import pair
+import asyncio
 
-TCP_IP = '10.1.137.255'
-TCP_PORT = 5050
+TCP_IP = '192.168.0.6'
+TCP_PORT = 5000
 BUFFER_SIZE = 1024
 
 
@@ -17,8 +18,9 @@ socket.connect((TCP_IP, TCP_PORT))
 
 
 cola = queue.Queue()
+semaforo1 = asyncio.Semaphore(0)
 lista_resultados = []
-(int)counter = 0
+counter = 0
 
 def lector():
 	num=input('Introduzca la espera en segundos: \n')
@@ -36,13 +38,15 @@ def lector():
 		myPair = pair.Pair(mensaje)
 		listaResultados.append(myPair)
 		cola.put(myPair)
+		semaforo1.release()
 		
-
 	
+
 
 def enviar():
 	seguir = True
 	while seguir:
+		semaforo1.acquire()
 		mensj = cola.get().oracion
 		if mensj == "1":
 			seguir = False

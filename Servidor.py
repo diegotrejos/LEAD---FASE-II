@@ -1,37 +1,7 @@
 #!/usr/bin/env python
+import threading
 import socket
 import queue
-
-TCP_IP = '10.1.137.235'
-TCP_PORT = 5050  # Pedirlo por consola o argumento
-BUFFER_SIZE = 1024  
-
-socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-socket.bind((TCP_IP, TCP_PORT))
-socket.listen(1)
-conn, addr = socket.accept()
-print(conn)
-print('Connection address:', addr)
-
-cola = queue.Queue()
-
-class MyThread (threading.Thread):
-	def __init__(self, threadID): #override del constructor
-		threading.Thread.__init__(self)
-		self.threadID = threadID
-
-	def run(self):
-		if self.threadID == 0:
-			# Lea
-			print("Soy el Thread 0")
-			recibir()
-		else if self.threadID == 1:
-			# Envie
-			print("Soy el Thread 1")
-			enviar()
-		else: #Thread 2
-			print("Soy el Thread 2")
-			leerConsola() # Valorador IP Andres
 
 def validate_ip(s):
     a = s.split('.')
@@ -44,7 +14,14 @@ def validate_ip(s):
         if i < 0 or i > 255:
             return False
     return True
-			
+
+def validate_conn_port(s):
+	if s < 0 or s > 65535:
+		return False
+	else:
+		return True
+	
+	
 def leerConsola():
 	# leer input de consola que pide imprimir lo del IP
 	b2 = False
@@ -70,7 +47,10 @@ def leerConsola():
 
 def enviar():
 	# Sacar la oracion del queue, usar lock del queue
+	item = cola.get(true)
+	resultado = len(item.split())
 	#resultado = len(oracion.split())
+	conn.send(resultado)
 	#conn.send(resultado)
 
 
@@ -83,5 +63,38 @@ def recibir():
 		if not data2: break
 		print("received data:", data2)
 		  
+TCP_IP = '192.168.0.6'
+TCP_PORT = int(input("ingrese el puerto de coneccion\n"))
+BUFFER_SIZE = 1024  
+validate_conn_port(TCP_PORT)
+socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+socket.bind((TCP_IP, TCP_PORT))
+socket.listen(1)
+conn, addr = socket.accept()
+print(conn)
+print('Connection address:', addr)
+
+
+cola = queue.Queue()
+
+
+class MyThread (threading.Thread):
+	def __init__(self, threadID): #override del constructor
+		threading.Thread.__init__(self)
+		self.threadID = threadID
+
+	def run(self):
+		if self.threadID == 0:
+			# Lea
+			print("Soy el Thread 0")
+			recibir()
+		elif self.threadID == 1:
+			# Envie
+			print("Soy el Thread 1")
+			enviar()
+		else: #Thread 2
+			print("Soy el Thread 2")
+			leerConsola() # Valorador IP Andres
+
 
 conn.close()
