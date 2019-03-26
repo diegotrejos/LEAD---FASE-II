@@ -2,6 +2,7 @@
 import threading
 import socket
 import queue
+import time
 
 
 cola = queue.Queue()
@@ -13,6 +14,10 @@ tiempo = 5
 conn = ''
 addr = ''
 mySocket = ''
+TCP_IP = ''
+TCP_PORT = ''
+
+semCola = threading.Semaphore(0) #semaforo cola
 
 class MyThread (threading.Thread):
 	def __init__(self, threadID): #override del constructor
@@ -72,26 +77,36 @@ def leerConsola():
 			b = validate_ip(y)
 	else:
 		while b == False:
-			y = int(input('Digite el puerto: \n'))
+			y = int(input('Digite el puerto: \n')) #10.1.137.25 
 			if 0 <= y <= 65535:
 				b = True
 
 def enviar():
-	# Sacar la oracion del queue, usar lock del queue
-	oracion = cola.get()
-	resultado = len(oracion.split())
-	#resultado = len(oracion.split())
-	conn.send(resultado)
+	seguir = True
+	while seguir:
+		semCola.acquire()
+		while cola.empty() == False:
+			oracion = cola.get()
+			if oracion == "1":
+				seguir = False
+			resultado = len(oracion.split())
+			conn.send(str(resultado).encode())
+			time.sleep(tiempo)
 
 
 def recibir():
-	while True:
+	seguirRecibiendo = True
+	while seguirRecibiendo:
 		print("Escuchando")
 		data = conn.recv(BUFFER_SIZE)
 		data2 = data.decode()
+		if data2 == "1":
+			seguirRecibiendo = False
+		print("Lo que me llego: " + data2)
 		cola.put(data2)
-		if not data2: break
-		print("received data: ", data2)
+		semCola.release()
+		#if not data2: break
+		#print("received data: ", data2)
 		  
 
 def pedirRetardo():
@@ -109,11 +124,13 @@ def comunicacionSocket():
 	global conn
 	global addr
 	global mySocket
+	global TCP_IP
+	global TCP_PORT
 	TCP_IP = input('Ingrese el IP del servidor\n')
 	TCP_PORT = input('Ingrese el puerto por el cual se comunicaran\n')
 	mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	mySocket.bind((TCP_IP, int(TCP_PORT)))
-	mySocket.listen(1)
+	mySocket.listen(1) 
 	conn, addr = mySocket.accept()
 	print(conn)
 	print('Connection address:', addr)

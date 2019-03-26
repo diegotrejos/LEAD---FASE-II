@@ -38,8 +38,11 @@ def comunicacionSocket():
 				
 
 def imprimirResultados():
+	cantidad = 1
+	print("Imprimiendo...")
 	for pair in listaResultados:
-		print(str(pair.oracion) + ": " + str(pair.cantidadPalabras))
+		print(str(cantidad) + ": " + str(pair.oracion) + ": " + str(pair.cantidadPalabras))
+		cantidad += 1
 
 def lector():
 	mensaje = " "
@@ -64,13 +67,11 @@ def enviar():
 			if mensj == "1":
 				seguir = False
 				sem2.release()
-			#mySocket.send(mensj.encode())
-			#data = mySocket.recv(BUFFER_SIZE)
-			#list[contador].cantidadPalabras = data.decode()
+			mySocket.send(mensj.encode())
+			data = mySocket.recv(BUFFER_SIZE)
+			listaResultados[contador].cantidadPalabras = data.decode()
 			contador += 1
 			sem1.release()	
-			
-			
 
 comunicacionSocket() # Arma socket pidiendo IP y puerto
 
@@ -81,4 +82,4 @@ thread1.start()
 thread0.join()
 thread1.join()
 
-#socket.close()
+mySocket.close()
