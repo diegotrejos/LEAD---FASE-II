@@ -33,19 +33,45 @@ class MyThread (threading.Thread):
 			print("Soy el Thread 2")
 			leerConsola() # Valorador IP Andres
 
-
+def validate_ip(s):
+    a = s.split('.')
+    if len(a) != 4:
+        return False
+    for x in a:
+        if not x.isdigit():
+            return False
+        i = int(x)
+        if i < 0 or i > 255:
+            return False
+    return True
+			
 def leerConsola():
 	# leer input de consola que pide imprimir lo del IP
+	b2 = False
+	while b2 == False:
+		decision = input('Quiere digitar un IP o un puerto [ip/pu]? \n')
+		if decision == 'ip':
+			b2 = True
+		elif decision == 'pu':
+		  	b2 = True
+		else:
+		  	print("Input invalido")
 
-
+	b = False
+	if decision == 'ip':
+		while b == False:
+			y = input('Digite el IP: \n')
+			b = validate_ip(y)
+	else:
+		while b == False:
+			y = int(input('Digite el puerto: \n'))
+			if 0 <= y <= 65535:
+				b = True
 
 def enviar():
 	# Sacar la oracion del queue, usar lock del queue
 	#resultado = len(oracion.split())
 	#conn.send(resultado)
-	
-
-
 
 
 def recibir():
