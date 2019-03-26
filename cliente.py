@@ -5,6 +5,17 @@ import time
 import threading
 import pair
 
+
+cola = queue.Queue()
+listaResultados = []
+
+sem1 = threading.Semaphore(0) #semaforo 1
+sem2 = threading.Semaphore(0) #semafoto 2
+
+BUFFER_SIZE = 1024
+
+mySocket = ''
+
 class MyThread (threading.Thread):
 	def __init__(self, threadID): #override del constructor
 		threading.Thread.__init__(self)
@@ -13,47 +24,25 @@ class MyThread (threading.Thread):
 	def run(self):
 		if self.threadID == 0:
 			# Lea
-			print("Soy el Thread 0")
 			lector()
 		else:
 			# Envie
-			print("Soy el Thread 1")
 			enviar()
 
-TCP_IP = '192.168.205.131'
-TCP_PORT = 5050
-BUFFER_SIZE = 1024
-
-#socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#socket.connect((TCP_IP, TCP_PORT))
-
-
-cola = queue.Queue()
-listaResultados = []
-
-sem1 = threading.Semaphore(0) #semaforo 1
-sem2 = threading.Semaphore(0) #semafoto 2
-
-
+def comunicacionSocket():
+	global mySocket
+	TCP_IP = input('Ingrese el IP del servidor\n')
+	TCP_PORT = input('Ingrese el puerto por el cual se comunicaran\n')
+	mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	mySocket.connect((TCP_IP, int(TCP_PORT)))
+				
 
 def imprimirResultados():
 	for pair in listaResultados:
 		print(str(pair.oracion) + ": " + str(pair.cantidadPalabras))
 
-
-
 def lector():
-	num=input('Introduzca la espera en segundos: \n')
-	#reviso que ingreso sea un numero
-	try:
-		val=int(num)
-		tiempo = val
-	except:
-		print("Eso no es un numero, se pondran 5 segundos")
-		tiempo = 5
-	
 	mensaje = " "
-	
 	while mensaje != "1":
 		mensaje = input('Digite su oracion\n')
 		#print(mensaje)
@@ -62,12 +51,11 @@ def lector():
 		cola.put(myPair)
 		sem1.release()
 	# Aqui sigue cuando lo que se encuentra es un 1
-	print("Soy el thread 0 y estoy esperando por el queue")
 	sem2.acquire()
 	imprimirResultados()
 
 def enviar():
-	global contador
+	contador = 0
 	seguir = True
 	while seguir:
 		sem1.acquire()
@@ -76,20 +64,21 @@ def enviar():
 			if mensj == "1":
 				seguir = False
 				sem2.release()
-				print("Release del semaforo 2")
-			#socket.send(mensj.encode())
-			#data = socket.recv(BUFFER_SIZE)
+			#mySocket.send(mensj.encode())
+			#data = mySocket.recv(BUFFER_SIZE)
 			#list[contador].cantidadPalabras = data.decode()
 			contador += 1
-			sem1.release()			
-
+			sem1.release()	
 			
-contador = 0
+			
 
-thread1 = MyThread(0)
-thread2 = MyThread(1)
+comunicacionSocket() # Arma socket pidiendo IP y puerto
+
+thread0 = MyThread(0)
+thread1 = MyThread(1)
+thread0.start()
 thread1.start()
-thread2.start()
+thread0.join()
 thread1.join()
-thread2.join()
+
 #socket.close()
