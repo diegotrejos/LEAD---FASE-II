@@ -64,9 +64,10 @@ def recibir():
 		print("received data:", data2)
 		  
 TCP_IP = '192.168.0.6'
-TCP_PORT = int(input("ingrese el puerto de coneccion\n"))
+TCP_PORT = int(input("ingrese el puerto de conexion\n"))
 BUFFER_SIZE = 1024  
-validate_conn_port(TCP_PORT)
+while(not validate_conn_port(TCP_PORT)):
+	TCP_PORT = int(input("ingrese el puerto de conexion\n"))	
 socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 socket.bind((TCP_IP, TCP_PORT))
 socket.listen(1)
