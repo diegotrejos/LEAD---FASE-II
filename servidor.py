@@ -107,7 +107,7 @@ def enviar():
 				seguir = False
 				cerrar = True
 			resultado = len(oracion.split())
-			Matrix[contador] = [oracion,resultado,TCP_IP,TCP_PORT]
+			Matrix[contador] = [oracion,resultado, addr[0], addr[1]]
 			contador += 1
 			conn.send(str(resultado).encode())
 			time.sleep(tiempo)
@@ -145,14 +145,14 @@ def comunicacionSocket():
 	global mySocket
 	global TCP_IP
 	global TCP_PORT
-	TCP_IP = input('Ingrese el IP del servidor\n')
+	TCP_IP = input('Ingrese el IP del cliente\n')
 	TCP_PORT = input('Ingrese el puerto por el cual se comunicaran\n')
 	mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	mySocket.bind((TCP_IP, int(TCP_PORT)))
 	mySocket.listen(1) 
 	conn, addr = mySocket.accept()
 	print(conn)
-	print('Connection address:', addr)
+	print('Connection address: ', addr)
 
 	
 	
