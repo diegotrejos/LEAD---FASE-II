@@ -19,6 +19,7 @@ TCP_PORT = ''
 contador = 0
 w, h = 4, 1024
 Matrix = [[0 for x in range(w)] for y in range(h)]
+cerrar = False
 
 semCola = threading.Semaphore(0) #semaforo cola
 
@@ -63,36 +64,40 @@ def validate_conn_port(s):
 	
 def leerConsola():
 	# leer input de consola que pide imprimir lo del IP
-	b2 = False
-	while b2 == False:
-		decision = input('Quiere digitar un IP o un puerto [ip/pu]? \n')
-		if decision == 'ip':
-			b2 = True
-		elif decision == 'pu':
-		  	b2 = True
-		else:
-		  	print("Input invalido")
+	global cerrar
+	while cerrar == False:
+		b2 = False
+		while b2 == False:
+			decision = input('Quiere digitar un IP o un puerto [ip/pu]? \n')
+			if decision == 'ip':
+				b2 = True
+			elif decision == 'pu':
+				b2 = True
+			else:
+				print("Input invalido")
 
-	b = False
-	if decision == 'ip':
-		while b == False:
-			y = input('Digite el IP: \n')
-			b = validate_ip(y)
-		print('Las oraciones con IP = ', y, ' son:\n')
-		for i in range(0,contador-1):
-			if Matrix[i][2] == y:
-				print(Matrix[i][0], ' : ', Matrix[i][1])
-	else:
-		while b == False:
-			y = int(input('Digite el puerto: \n')) #10.1.137.25 
-			if 0 <= y <= 65535:
-				b = True
-		print('Las oraciones del puerto = ', y, ' son:\n')
-		for i in range(0,contador-1):
-			if Matrix[i][3] == y:
-				print(Matrix[i][0], ' : ', Matrix[i][1])
+		b = False
+		if decision == 'ip':
+			while b == False:
+				y = input('Digite el IP: \n')
+				b = validate_ip(y)
+			print('Las oraciones con IP = ', y, ' son:\n')
+			for i in range(0,contador-1):
+				if Matrix[i][2] == y:
+					print(Matrix[i][0], ' : ', Matrix[i][1])
+		else:
+			while b == False:
+				y = int(input('Digite el puerto: \n')) #10.1.137.25 
+				if 0 <= y <= 65535:
+					b = True
+			print('Las oraciones del puerto = ', y, ' son:\n')
+			for i in range(0,contador-1):
+				if int(Matrix[i][3]) == y:
+					print(Matrix[i][0], ' : ', Matrix[i][1])
 
 def enviar():
+	global contador
+	global cerrar
 	seguir = True
 	while seguir:
 		semCola.acquire()
@@ -100,8 +105,9 @@ def enviar():
 			oracion = cola.get()
 			if oracion == "1":
 				seguir = False
+				cerrar = True
 			resultado = len(oracion.split())
-			Matrix[contador] = [oracion,resultado,TCP_IP,TCP_Port]
+			Matrix[contador] = [oracion,resultado,TCP_IP,TCP_PORT]
 			contador += 1
 			conn.send(str(resultado).encode())
 			time.sleep(tiempo)
