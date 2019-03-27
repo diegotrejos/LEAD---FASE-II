@@ -28,11 +28,36 @@ class MyThread (threading.Thread):
 		else:
 			# Envie
 			enviar()
+			
+def validate_ip(s):
+    a = s.split('.')
+    if len(a) != 4:
+        return False
+    for x in a:
+        if not x.isdigit():
+            return False
+        i = int(x)
+        if i < 0 or i > 255:
+            return False
+    return True
+    
+def validate_conn_port(s):
+	if s < 0 or s > 65535:
+		return False
+	else:
+		return True
 
 def comunicacionSocket():
 	global mySocket
+	
 	TCP_IP = input('Ingrese el IP del servidor\n')
+	while(not(validate_ip(TCP_IP))):
+		TCP_IP = input('Ingrese un IP valido para el servidor\n')
+	
 	TCP_PORT = input('Ingrese el puerto por el cual se comunicaran\n')
+	while(not(validate_conn_port(int(TCP_PORT)))):
+		TCP_PORT = input('Ingrese un puerto valido por el cual comunicarse\n')
+	
 	mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	mySocket.connect((TCP_IP, int(TCP_PORT)))
 				

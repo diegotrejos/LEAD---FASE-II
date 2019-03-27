@@ -67,13 +67,13 @@ def leerConsola():
 	global cerrar
 	while cerrar == False:
 		b2 = False
-		while b2 == False:
+		while b2 == False and cerrar == False:
 			decision = input('Quiere digitar un IP o un puerto [ip/pu]? \n')
 			if decision == 'ip':
 				b2 = True
 			elif decision == 'pu':
 				b2 = True
-			else:
+			elif cerrar == False:
 				print("Input invalido")
 
 		b = False
@@ -85,7 +85,7 @@ def leerConsola():
 			for i in range(0,contador-1):
 				if Matrix[i][2] == y:
 					print(Matrix[i][0], ' : ', Matrix[i][1])
-		else:
+		elif decision == 'pu':
 			while b == False:
 				y = int(input('Digite el puerto: \n')) #10.1.137.25 
 				if 0 <= y <= 65535:
@@ -94,6 +94,7 @@ def leerConsola():
 			for i in range(0,contador-1):
 				if int(Matrix[i][3]) == y:
 					print(Matrix[i][0], ' : ', Matrix[i][1])
+			
 
 def enviar():
 	global contador
@@ -136,7 +137,11 @@ def pedirRetardo():
 		val = int(num)
 		tiempo = val
 	except:
-		print("Eso no es un numero, se pondran 5 segundos")
+		print("Eso no es un numero, se asignaran 5 segundos")
+		tiempo = 5
+	if(tiempo < 0):
+		print("El tiempo no puede ser negativo, se asignaran 5 segundos")
+		tiempo = 5
 			
 			
 def comunicacionSocket():
@@ -145,8 +150,15 @@ def comunicacionSocket():
 	global mySocket
 	global TCP_IP
 	global TCP_PORT
-	TCP_IP = input('Ingrese el IP del cliente\n')
+	
+	TCP_IP = input('Ingrese el IP del servidor\n')
+	while(not(validate_ip(TCP_IP))):
+		TCP_IP = input('Ingrese un IP valido para el servidor\n')
+	
 	TCP_PORT = input('Ingrese el puerto por el cual se comunicaran\n')
+	while(not(validate_conn_port(int(TCP_PORT)))):
+		TCP_PORT = input('Ingrese un puerto valido por el cual comunicarse\n')
+		
 	mySocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	mySocket.bind((TCP_IP, int(TCP_PORT)))
 	mySocket.listen(1) 
