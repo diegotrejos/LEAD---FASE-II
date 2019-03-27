@@ -31,14 +31,14 @@ class MyThread (threading.Thread):
 	def run(self):
 		if self.threadID == 0:
 			# Lea
-			print("Soy el Thread 0")
+			#print("Soy el Thread 0")
 			recibir()
 		elif self.threadID == 1:
 			# Envie
-			print("Soy el Thread 1")
+			#print("Soy el Thread 1")
 			enviar()
 		else: #Thread 2
-			print("Soy el Thread 2")
+			#print("Soy el Thread 2")
 			leerConsola() # Valorador IP Andres
 			
 
@@ -117,7 +117,7 @@ def enviar():
 def recibir():
 	seguirRecibiendo = True
 	while seguirRecibiendo:
-		print("Escuchando")
+		#print("Escuchando")
 		data = conn.recv(BUFFER_SIZE)
 		data2 = data.decode()
 		if data2 == "1":
