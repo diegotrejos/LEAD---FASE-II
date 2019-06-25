@@ -31,7 +31,8 @@ class NodoAzul:
         server = (self.ip, self.port)
         colaEntrada = queue.Queue()
         colaSalida = queue.Queue()
-
+        package = a_aPaq(0,1,"hola",('10.1.137.29',8888))
+        colaSalida.put(package)
         # listaVecinos[]
         # Prepara Hilo que recibe mensajes
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -51,27 +52,26 @@ class NodoAzul:
     
 def HiloRecibidor(colaEntrada,sock,nodeID,colaSalida):
   while True:
-        payload, client_address = sock.recvfrom(8888)#recibe datos del puerto 5000
-        #caso 1 narnja naranja
-     
-        print("Paquete obtenido en de tipo:")
-        package = a_aPaq(0,0,0,client_address)
-        package.unserialize(payload)      
-             
-        print("Mensaje de Tipo", package.tipo,"De SN=", package.sn,"Que contiene:",package.payload,"Proveniente de:", package.direccion)
-        
-               
-        colaEntrada.put(package)
+	  payload, client_address = sock.recvfrom(1024)
+	  print("Paquete obtenido")
+	  package = a_aPaq(0,0,0,client_address)
+	  package.unserialize(payload)
+	  print("Mensaje de Tipo", package.tipo,"De SN=", package.sn,"Que contiene:",package.payload,"Proveniente de:", package.direccion)
+	  colaSalida.put(package)
            
       
 
 
 def HiloEnviador(colaSalida, sock):
+    sock2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     while True:
         ##Takes a package from the queue. If the queue is empty it waits until a package arrives
+      
        package = colaSalida.get()    
+       print(package.direccion)
        address = package.direccion
-       package.serialize()
-       sock.sendto(bytePacket, address)
+       pak=package.serialize()
+       sock2.sendto(pak, address)
+       print("mensaje enviado")
 
 
