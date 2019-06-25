@@ -31,7 +31,7 @@ class NodoAzul:
         server = (self.ip, self.port)
         colaEntrada = queue.Queue()
         colaSalida = queue.Queue()
-        package = a_aPaq(0,1,"hola",('10.1.137.29',8888))
+        package = a_aPaq(0,1,"hola",('10.1.137.29',8887))
         colaSalida.put(package)
         # listaVecinos[]
         # Prepara Hilo que recibe mensajes
@@ -63,7 +63,7 @@ def HiloRecibidor(colaEntrada,sock,nodeID,colaSalida):
 
 
 def HiloEnviador(colaSalida, sock):
-    sock2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
     while True:
         ##Takes a package from the queue. If the queue is empty it waits until a package arrives
       
@@ -71,7 +71,7 @@ def HiloEnviador(colaSalida, sock):
        print(package.direccion)
        address = package.direccion
        pak=package.serialize()
-       sock2.sendto(pak, address)
+       sock.sendto(pak, address)
        print("mensaje enviado")
 
 
